@@ -9,6 +9,6 @@ CREATE TABLE products(
   department_name VARCHAR(100) NULL,
   price int,
   stock_quantity INT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (id)	
+  PRIMARY KEY (item_id)	
 );
 
