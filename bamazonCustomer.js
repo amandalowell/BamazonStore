@@ -1,19 +1,7 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
 
-var connection = mysql.createConnection({
-  host: "localhost",
 
-  // Your port; if not 3306
-  port: 3306,
 
-  // Your username
-  user: "root",
 
-  // Your password
-  password: "rootroot",
-  database: "bamazon"
-});
 
 
 var mysql = require("mysql");
@@ -21,23 +9,24 @@ var inquirer = require("inquirer");
 
 // ------------------------------- CONNNECTION
 var connection = mysql.createConnection({
-   host: "localhost",
+    host: "localhost",
 
-   // Your port; if not 3306
-   port: 3306,
+    // Your port; if not 3306
+    port: 3306,
 
-   // Your username
-   user: "root",
+    // Your username
+    user: "root",
 
-   // Your password
-   password: "rootroot",
-   database: "bamazon"
+    // Your password
+    password: "rootroot",
+    database: "bamazon"
 });
 
 connection.connect(function (err) {
-   if (err) throw err;
-   runSearch();
+    if (err) throw err;
+    runSearch();
 });
+
 
 // ------------------------------- USER INPUT
 // function searchStore() {
@@ -74,80 +63,73 @@ connection.connect(function (err) {
 //         });
 // }
 
+// searchStore()
+
+
 function productAmountSearch() {
-   inquirer
-       .prompt({
-           name: "productID",
-           type: "input",
-           message: "What is the ID of the product that you would like to buy?"
-       })
-       .then(function (answer) {
-           var query = "SELECT item_id, stock_quantity";
-           query += "FROM products ON (products.item_id = products.artist AND top_albums.year ";
-           query += "= top5000.year) WHERE (top_albums.artist = ? AND top5000.artist = ?) ORDER BY top_albums.year, top_albums.position";
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "productID",
+                message: "What is the ID of the product that you would like to buy?"
+            },
+            {
+                type: "input",
+                name: "productAmount",
+                message: "What is the ID of the product that you would like to buy?"
+            }
+        ])
+        .then(function (obj) {
+            /*
+            obj = {
+                productID: someValue,
+                productAmount: someValue
+            }
+            */
+           productID = obj.productID
+           productAmount = obj.productAmount
 
-           connection.query(query, [answer.artist, answer.artist], function (err, res) {
-               console.log(res.length + " matches found!");
-               for (var i = 0; i < res.length; i++) {
-                   console.log(
-                       i + 1 + ".) " +
-                       "Year: " +
-                       res[i].year +
-                       " Album Position: " +
-                       res[i].position +
-                       " || Artist: " +
-                       res[i].artist +
-                       " || Song: " +
-                       res[i].song +
-                       " || Album: " +
-                       res[i].album
-                   );
-               }
+            var query = "SELECT item_id, stock_quantity";
+            query += "FROM products WHERE item_id = " + productID;
 
-               runSearch();
-           });
-       });
+            connection.query(query, [answer.artist, answer.artist], function (err, res) {
+                console.log(res.length + " matches found!");
+                for (var i = 0; i < res.length; i++) {
+                    console.log(
+                        i + 1 + ".) " +
+                        "Year: " +
+                        res[i].year +
+                        " Album Position: " +
+                        res[i].position +
+                        " || Artist: " +
+                        res[i].artist +
+                        " || Song: " +
+                        res[i].song +
+                        " || Album: " +
+                        res[i].album
+                    );
+                }
+
+                runSearch();
+            });
+        });
 }
 
 productAmountSearch()
 
-// display  all of the items available for sale. Include the ids, names, and prices of products for sale.
 
+// connection.connect(function (err) {
+//     if (err) throw err;
+//     console.log("connected as id " + connection.threadId + "\n");
+//     readColleges();
+// });
 
+// function readColleges() {
+//     connection.query("SELECT name FROM colleges", function (err, res) {
+//         if (err) throw err;
 
-
-//promp users with two messages :
-
-//1. ask them the ID of the product they would like to buy 
-//2. ask how many units of the product they would like to buy.
-
-
-
-//Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-
-//If not, the app should log a phrase like Insufficient quantity!, and then prevent the order from going through.
-
-
-
-
-//However, if your store does have enough of the product, you should fulfill the customer's order.
-//This means updating the SQL database to reflect the remaining quantity.
-//Once the update goes through, show the customer the total cost of their purchase.
-
- //connection.connect(function (err) {
-  //  if (err) throw err;
-  //   console.log("connected as id " + connection.threadId + "\n");
-  //   readColleges();
- //});
-
-//function readColleges() {
- //    connection.query("SELECT name FROM colleges", function (err, res) {
-//      if (err) throw err;
-
-         //Log all results of the SELECT statement
+//         // Log all results of the SELECT statement
 //         console.log(res);
 //         connection.end();
 //     });
-
-
-// searchStore()
