@@ -90,6 +90,18 @@ function productAmountSearch() {
            productID = obj.productID
            productAmount = obj.productAmount
 
+
+           connection.query(query, "select stock_quantity from products where item_id =" + productID)
+            function(err, res) {
+                var productsAvailable =
+                if (productAmount > productsAvailable){
+                    console.log("There isn't this size in stock, please pick another.")
+                } else {
+                    
+                }
+            }
+
+
             var query = "SELECT item_id, stock_quantity";
             query += "FROM products WHERE item_id = " + productID;
 
