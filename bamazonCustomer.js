@@ -62,43 +62,6 @@ connection.connect(function (err) {
 });
 
 
-// ------------------------------- USER INPUT
-// function searchStore() {
-//     // prompt for info about the item being put up for auction
-//     inquirer
-//         .prompt([
-//             {
-//                 name: "product_id",
-//                 type: "input",
-//                 message: "What is the ID of the product that you would like to buy?"
-//             },
-//             {
-//                 name: "product_amount",
-//                 type: "input",
-//                 message: "How many units of that product would you like to buy?"
-//             },
-//             {
-//                 name: "startingBid",
-//                 type: "input",
-//                 message: "How many units of that product would you like to buy?",
-//                 validate: function (value) {
-//                     if (isNaN(value) === false) {
-//                         return true;
-//                     }
-//                     return false;
-//                 }
-//             }
-//         ])
-//         .then(function (answer) {
-//             // when finished prompting, insert a new item into the db with that info
-//             connection.query(
-//                 console.log("done")
-//             );
-//         });
-// }
-
-// searchStore()
-
 
 function productAmountSearch() {
    inquirer
@@ -152,3 +115,39 @@ productAmountSearch()
 //         console.log(res);
 //         connection.end();
 //     });
+// ------------------------------- USER INPUT
+// function searchStore() {
+//     // prompt for info about the item being put up for auction
+//     inquirer
+//         .prompt([
+//             {
+//                 name: "product_id",
+//                 type: "input",
+//                 message: "What is the ID of the product that you would like to buy?"
+//             },
+//             {
+//                 name: "product_amount",
+//                 type: "input",
+//                 message: "How many units of that product would you like to buy?"
+//             },
+//             {
+//                 name: "startingBid",
+//                 type: "input",
+//                 message: "How many units of that product would you like to buy?",
+//                 validate: function (value) {
+//                     if (isNaN(value) === false) {
+//                         return true;
+//                     }
+//                     return false;
+//                 }
+//             }
+//         ])
+//         .then(function (answer) {
+//             // when finished prompting, insert a new item into the db with that info
+//             connection.query(
+//                 console.log("done")
+//             );
+//         });
+// }
+
+// searchStore()
