@@ -3,120 +3,130 @@ var inquirer = require("inquirer");
 
 // ------------------------------- CONNNECTION
 var connection = mysql.createConnection({
-   host: "localhost",
+    host: "localhost",
 
-   // Your port; if not 3306
-   port: 3306,
+    // Your port; if not 3306
+    port: 3306,
 
-   user: "root",
+    user: "root",
 
-   password: "rootroot",
+    password: "rootroot",
 
-   database: "bamazon"
+    database: "bamazon"
 });
 
 connection.connect(function (err) {
-   if (err) throw err;
-   showProducts();
+    if (err) throw err;
+    showProducts();
 });
 
 
 
 // ------------------------------- SHOW PRODUCTS
 function showProducts() {
-   myQuery = "select * from products"
+    myQuery = "select * from products"
 
-   connection.query(myQuery, function (err, res) {
-       for (var i = 0; i < res.length; i++) {
-           console.log(
-               i + 1 + ".) " +
-               "Product ID: " + res[i].item_id +
-               " || Product name: " + res[i].product_name +
-               " || Product quantity: " + res[i].stock_quantity
-           )
-       }
-   })
-
-   setTimeout( function() {
-       requestProduct()
-   }, 1000)
+    connection.query(myQuery, function (err, res) {
+        for (var i = 0; i < res.length; i++) {
+            console.log(
+                i + 1 + ".) " +
+                "Product ID: " + res[i].item_id +
+                " || Product name: " + res[i].product_name +
+                " || Product quantity: " + res[i].stock_quantity
+            )
+        }
+    })
+        
+    setTimeout( function() {
+        requestProduct()
+    }, 1000)
 }
 
 
 // ------------------------------- PRODUCT AMOUNT
 function requestProduct() {
-   inquirer.prompt([
-       {
-           name: "productID",
-           type: "input",
-           message: "What is the ID of the product that you would like to buy?",
-           validate: function (value) {
-               if (isNaN(value) === false) {
-                   return true;
-               }
-               return false;
-           }
-       },
-       {
-           name: "productAmount",
-           type: "input",
-           message: "How many products of that kind would you like to buy?",
-           validate: function (value) {
-               if (isNaN(value) === false) {
-                   return true;
-               }
-               return false;
-           }
-       },
-   ])
-   .then(function(obj) {
-        console.log(obj)
-       /*
-       obj = {
-           productID: someValue,
-           productAmount: someValue
-       } */
-       productID = obj.productID
-       productAmount = obj.productAmount
+    inquirer.prompt([
+        {
+            name: "productID",
+            type: "input",
+            message: "What is the ID of the product that you would like to buy?",
+            validate: function (value) {
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
+            }
+        },
+        {
+            name: "productAmount",
+            type: "input",
+            message: "How many products of that kind would you like to buy?",
+            validate: function (value) {
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
+            }
+        },
+    ])
+    .then(function(obj) {
+         console.log(obj)
+        /*
+        obj = {
+            productID: someValue,
+            productAmount: someValue
+        } */
+        productID = obj.productID
+        productAmount = obj.productAmount
+        // console.log(productID)
+        // console.log(productAmount)
+        
+        var myQuery = "select stock_quantity from products where item_id = ";
+        myQuery += productID;
 
-       // console.log(productID)
-       // console.log(productAmount)
+        connection.query(myQuery, function(err, res) {
+            console.log(res)
 
-       var myQuery = "select stock_quantity from products where item_id = ";
-       myQuery += productID;
+            var productsAvailable = res[0].stock_quantity;
+            console.log("Products available: " + productsAvailable)
+            
 
-       connection.query(myQuery, function(err, res) {
-           console.log(res)
+            if (productAmount > productsAvailable) {
+                console.log("There isn't enough of that product, pick a smaller size.")
+            }
+            else {
+                console.log("Congrats my brother, you have purchased " + productAmount + " of the item_id: " + productID)
 
-           var productsAvailable = res[0].stock_quantity;
-           console.log("Products available: " + productsAvailable)
-
-
-           if (productAmount > productsAvailable) {
-               console.log("There isn’t enough of that product, pick a smaller size.")
-           }
-           else {
-               console.log("Congrats my brother, you have purchased " + productAmount + " of the item_id: " + productID)
-           }
-       })
-   })
+                var productRemaining = 0;
+                var productRemaining = productsAvailable - productAmount;
+                updateProductQuantity(productID, productRemaining)
+            }
+        })
+    })
 }
-////////////////////////////////////////
-       // .then(function (answer) {
-       //     var query = "SELECT position,song,artist,year FROM top5000 WHERE position BETWEEN ? AND ?";
-       //     connection.query(query, [answer.start, answer.end], function (err, res) {
-       //         for (var i = 0; i < res.length; i++) {
-       //             console.log(
-       //                 "Position: " +
-       //                 res[i].position +
-       //                 " || Song: " +
-       //                 res[i].song +
-       //                 " || Artist: " +
-       //                 res[i].artist +
-       //                 " || Year: " +
-       //                 res[i].year
-       //             );
-       //         }
-       //         runSearch();
-       //     });
-       // });
+
+function updateProductQuantity(productID, productRemaining) {
+    console.log("---inside---")
+    console.log("-->productRemaining: " + productRemaining)
+    console.log("-->productID: " + productID)
+
+    var aQuery = "update products ";
+    aQuery += "set stock_quantity = ";
+    aQuery += productRemaining;
+    aQuery += "where item_id = ";
+    aQuery += productID;
+
+    var aa = "update products set stock_quantity = ";
+    aa += "77";
+    aa += "where item_id = ";
+    aa += 9;
+
+    connection.query(aa, function(err, res) {
+        console.log(res)
+        // res[0].stock_quantity = 44;
+    })
+
+    setTimeout(function () {
+        showProducts()
+    }, 1000)
+}
