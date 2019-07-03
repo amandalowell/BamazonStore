@@ -1,147 +1,122 @@
-
-
-
-
-
-
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
 // ------------------------------- CONNNECTION
 var connection = mysql.createConnection({
-    host: "localhost",
+   host: "localhost",
 
-    // Your port; if not 3306
-    port: 3306,
+   // Your port; if not 3306
+   port: 3306,
 
-    // Your username
-    user: "root",
+   user: "root",
 
-    // Your password
-    password: "rootroot",
-    database: "bamazon"
+   password: "rootroot",
+
+   database: "bamazon"
 });
 
 connection.connect(function (err) {
-    if (err) throw err;
-    runSearch();
+   if (err) throw err;
+   showProducts();
 });
 
 
-// ------------------------------- USER INPUT
-// function searchStore() {
-//     // prompt for info about the item being put up for auction
-//     inquirer
-//         .prompt([
-//             {
-//                 name: "product_id",
-//                 type: "input",
-//                 message: "What is the ID of the product that you would like to buy?"
-//             },
-//             {
-//                 name: "product_amount",
-//                 type: "input",
-//                 message: "How many units of that product would you like to buy?"
-//             },
-//             {
-//                 name: "startingBid",
-//                 type: "input",
-//                 message: "How many units of that product would you like to buy?",
-//                 validate: function (value) {
-//                     if (isNaN(value) === false) {
-//                         return true;
-//                     }
-//                     return false;
-//                 }
-//             }
-//         ])
-//         .then(function (answer) {
-//             // when finished prompting, insert a new item into the db with that info
-//             connection.query(
-//                 console.log("done")
-//             );
-//         });
-// }
 
-// searchStore()
+// ------------------------------- SHOW PRODUCTS
+function showProducts() {
+   myQuery = "select * from products"
 
+   connection.query(myQuery, function (err, res) {
+       for (var i = 0; i < res.length; i++) {
+           console.log(
+               i + 1 + ".) " +
+               "Product ID: " + res[i].item_id +
+               " || Product name: " + res[i].product_name +
+               " || Product quantity: " + res[i].stock_quantity
+           )
+       }
+   })
 
-function productAmountSearch() {
-    inquirer
-        .prompt([
-            {
-                type: "input",
-                name: "productID",
-                message: "What is the ID of the product that you would like to buy?"
-            },
-            {
-                type: "input",
-                name: "productAmount",
-                message: "What is the ID of the product that you would like to buy?"
-            }
-        ])
-        .then(function (obj) {
-            /*
-            obj = {
-                productID: someValue,
-                productAmount: someValue
-            }
-            */
-           productID = obj.productID
-           productAmount = obj.productAmount
-
-
-           connection.query(query, "select stock_quantity from products where item_id =" + productID)
-            function(err, res) {
-                var productsAvailable =
-                if (productAmount > productsAvailable){
-                    console.log("There isn't this size in stock, please pick another.")
-                } else {
-                    
-                }
-            }
-
-
-            var query = "SELECT item_id, stock_quantity";
-            query += "FROM products WHERE item_id = " + productID;
-
-            connection.query(query, [answer.artist, answer.artist], function (err, res) {
-                console.log(res.length + " matches found!");
-                for (var i = 0; i < res.length; i++) {
-                    console.log(
-                        i + 1 + ".) " +
-                        "Year: " +
-                        res[i].year +
-                        " Album Position: " +
-                        res[i].position +
-                        " || Artist: " +
-                        res[i].artist +
-                        " || Song: " +
-                        res[i].song +
-                        " || Album: " +
-                        res[i].album
-                    );
-                }
-
-                runSearch();
-            });
-        });
+   setTimeout( function() {
+       requestProduct()
+   }, 1000)
 }
 
-productAmountSearch()
+
+// ------------------------------- PRODUCT AMOUNT
+function requestProduct() {
+   inquirer.prompt([
+       {
+           name: "productID",
+           type: "input",
+           message: "What is the ID of the product that you would like to buy?",
+           validate: function (value) {
+               if (isNaN(value) === false) {
+                   return true;
+               }
+               return false;
+           }
+       },
+       {
+           name: "productAmount",
+           type: "input",
+           message: "How many products of that kind would you like to buy?",
+           validate: function (value) {
+               if (isNaN(value) === false) {
+                   return true;
+               }
+               return false;
+           }
+       },
+   ])
+   .then(function(obj) {
+        console.log(obj)
+       /*
+       obj = {
+           productID: someValue,
+           productAmount: someValue
+       } */
+       productID = obj.productID
+       productAmount = obj.productAmount
+
+       // console.log(productID)
+       // console.log(productAmount)
+
+       var myQuery = "select stock_quantity from products where item_id = ";
+       myQuery += productID;
+
+       connection.query(myQuery, function(err, res) {
+           console.log(res)
+
+           var productsAvailable = res[0].stock_quantity;
+           console.log("Products available: " + productsAvailable)
 
 
-// connection.connect(function (err) {
-//     if (err) throw err;
-//     console.log("connected as id " + connection.threadId + "\n");
-//     readColleges();
-// });
-
-// function readColleges() {
-//     connection.query("SELECT name FROM colleges", function (err, res) {
-//         if (err) throw err;
-
-//         // Log all results of the SELECT statement
-//         console.log(res);
-//         connection.end();
-//     });
+           if (productAmount > productsAvailable) {
+               console.log("There isn’t enough of that product, pick a smaller size.")
+           }
+           else {
+               console.log("Congrats my brother, you have purchased " + productAmount + " of the item_id: " + productID)
+           }
+       })
+   })
+}
+////////////////////////////////////////
+       // .then(function (answer) {
+       //     var query = "SELECT position,song,artist,year FROM top5000 WHERE position BETWEEN ? AND ?";
+       //     connection.query(query, [answer.start, answer.end], function (err, res) {
+       //         for (var i = 0; i < res.length; i++) {
+       //             console.log(
+       //                 "Position: " +
+       //                 res[i].position +
+       //                 " || Song: " +
+       //                 res[i].song +
+       //                 " || Artist: " +
+       //                 res[i].artist +
+       //                 " || Year: " +
+       //                 res[i].year
+       //             );
+       //         }
+       //         runSearch();
+       //     });
+       // });
